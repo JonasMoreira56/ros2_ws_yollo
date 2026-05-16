@@ -39,13 +39,24 @@
       <direction>0.4 0.55 -0.75</direction>
     </light>
 
+    <actor name="actor_walking">
+      <skin>
+          <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+          <scale>1.0</scale>
+      </skin>
+      <animation name="walk">
+          <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+          <interpolate_x>true</interpolate_x>
+      </animation>
+    </actor>
+
     <model name="piso_da_praca">
       <static>true</static>
       <link name="link">
         <collision name="collision">
           <geometry>
             <box>
-              <size>24 24 0.10</size>
+              <size>24 24 0.5</size>
             </box>
           </geometry>
         </collision>
@@ -131,30 +142,7 @@
       </link>
     </model>
 
-    <model name="fonte_central">
-      <static>true</static>
-      <pose>0 0 0.24 0 0 0</pose>
-      <link name="link">
-        <collision name="base_collision">
-          <geometry><cylinder><radius>1.15</radius><length>0.42</length></cylinder></geometry>
-        </collision>
-        <visual name="base_visual">
-          <geometry><cylinder><radius>1.15</radius><length>0.42</length></cylinder></geometry>
-          <material>
-            <ambient>0.40 0.42 0.44 1</ambient>
-            <diffuse>0.55 0.57 0.58 1</diffuse>
-          </material>
-        </visual>
-        <visual name="agua_visual">
-          <pose>0 0 0.24 0 0 0</pose>
-          <geometry><cylinder><radius>0.92</radius><length>0.04</length></cylinder></geometry>
-          <material>
-            <ambient>0.05 0.25 0.45 0.75</ambient>
-            <diffuse>0.10 0.42 0.70 0.75</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
+  
 
     <model name="banco_oeste">
       <static>true</static>
@@ -339,5 +327,134 @@
         </visual>
       </link>
     </model>
+
+
+
+    <model name="bicicleta">
+      <static>true</static>
+      <pose>-6.7 -1.8 0.45 0 0 0.15</pose>
+      <link name="link">
+        <collision name="quadro_collision">
+          <geometry><box><size>1.55 0.18 0.75</size></box></geometry>
+        </collision>
+        <visual name="quadro_visual">
+          <geometry><box><size>1.55 0.08 0.08</size></box></geometry>
+          <material><ambient>0.80 0.08 0.04 1</ambient><diffuse>0.95 0.12 0.06 1</diffuse></material>
+        </visual>
+        <visual name="roda_dianteira_visual">
+          <pose>0.66 0 -0.10 1.5708 0 0</pose>
+          <geometry><cylinder><radius>0.33</radius><length>0.06</length></cylinder></geometry>
+          <material><ambient>0.02 0.02 0.02 1</ambient><diffuse>0.03 0.03 0.03 1</diffuse></material>
+        </visual>
+        <visual name="roda_traseira_visual">
+          <pose>-0.66 0 -0.10 1.5708 0 0</pose>
+          <geometry><cylinder><radius>0.33</radius><length>0.06</length></cylinder></geometry>
+          <material><ambient>0.02 0.02 0.02 1</ambient><diffuse>0.03 0.03 0.03 1</diffuse></material>
+        </visual>
+        <visual name="guidom_visual">
+          <pose>0.72 0 0.44 0 1.5708 0</pose>
+          <geometry><cylinder><radius>0.025</radius><length>0.55</length></cylinder></geometry>
+          <material><ambient>0.05 0.05 0.05 1</ambient><diffuse>0.08 0.08 0.08 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="lixeira">
+      <static>true</static>
+      <pose>-2.0 5.6 0.45 0 0 0</pose>
+      <link name="link">
+        <collision name="corpo_collision">
+          <geometry><cylinder><radius>0.28</radius><length>0.85</length></cylinder></geometry>
+        </collision>
+        <visual name="corpo_visual">
+          <geometry><cylinder><radius>0.28</radius><length>0.85</length></cylinder></geometry>
+          <material><ambient>0.05 0.33 0.18 1</ambient><diffuse>0.08 0.45 0.24 1</diffuse></material>
+        </visual>
+        <visual name="tampa_visual">
+          <pose>0 0 0.47 0 0 0</pose>
+          <geometry><cylinder><radius>0.31</radius><length>0.08</length></cylinder></geometry>
+          <material><ambient>0.04 0.22 0.13 1</ambient><diffuse>0.06 0.32 0.18 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="mochila">
+      <static>true</static>
+      <pose>1.9 -4.7 0.28 0 0 -0.4</pose>
+      <link name="link">
+        <collision name="corpo_collision">
+          <geometry><box><size>0.45 0.28 0.55</size></box></geometry>
+        </collision>
+        <visual name="corpo_visual">
+          <geometry><box><size>0.45 0.28 0.55</size></box></geometry>
+          <material><ambient>0.45 0.04 0.42 1</ambient><diffuse>0.62 0.08 0.58 1</diffuse></material>
+        </visual>
+        <visual name="bolso_visual">
+          <pose>0.02 -0.16 -0.06 0 0 0</pose>
+          <geometry><box><size>0.28 0.04 0.24</size></box></geometry>
+          <material><ambient>0.30 0.03 0.28 1</ambient><diffuse>0.45 0.05 0.42 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="caixa_entrega">
+      <static>true</static>
+      <pose>5.2 4.4 0.28 0 0 0.7</pose>
+      <link name="link">
+        <collision name="caixa_collision">
+          <geometry><box><size>0.65 0.50 0.45</size></box></geometry>
+        </collision>
+        <visual name="caixa_visual">
+          <geometry><box><size>0.65 0.50 0.45</size></box></geometry>
+          <material><ambient>0.58 0.36 0.16 1</ambient><diffuse>0.70 0.45 0.22 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="cone_transito">
+      <static>true</static>
+      <pose>2.2 -1.6 0.36 0 0 0</pose>
+      <link name="link">
+        <collision name="cone_collision">
+          <geometry><cylinder><radius>0.22</radius><length>0.70</length></cylinder></geometry>
+        </collision>
+        <visual name="cone_visual">
+          <geometry><cone><radius>0.25</radius><length>0.72</length></cone></geometry>
+          <material><ambient>0.95 0.28 0.02 1</ambient><diffuse>1.0 0.38 0.04 1</diffuse></material>
+        </visual>
+        <visual name="faixa_visual">
+          <pose>0 0 0.05 0 0 0</pose>
+          <geometry><cylinder><radius>0.16</radius><length>0.08</length></cylinder></geometry>
+          <material><ambient>0.95 0.95 0.90 1</ambient><diffuse>1.0 1.0 0.95 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+
+    <model name="placa_pare">
+      <static>true</static>
+      <pose>5.0 -5.2 0 0 0 -0.75</pose>
+      <link name="link">
+        <collision name="poste_collision">
+          <pose>0 0 0.85 0 0 0</pose>
+          <geometry><cylinder><radius>0.04</radius><length>1.7</length></cylinder></geometry>
+        </collision>
+        <visual name="poste_visual">
+          <pose>0 0 0.85 0 0 0</pose>
+          <geometry><cylinder><radius>0.04</radius><length>1.7</length></cylinder></geometry>
+          <material><ambient>0.45 0.45 0.45 1</ambient><diffuse>0.55 0.55 0.55 1</diffuse></material>
+        </visual>
+        <visual name="placa_visual">
+          <pose>0 0 1.75 0 0 0</pose>
+          <geometry><box><size>0.62 0.06 0.62</size></box></geometry>
+          <material><ambient>0.75 0.02 0.02 1</ambient><diffuse>0.95 0.03 0.03 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    
+
   </world>
 </sdf>
+
+
