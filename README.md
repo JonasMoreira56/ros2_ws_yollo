@@ -11,7 +11,9 @@ com YOLOv8.
   - Malhas 3D do robo e sensores.
   - Launch principal para abrir o robo no Gazebo.
   - Cenario de praca ao ar livre.
-  - Ponte ROS 2 <-> Gazebo para comandos, odometria, laser, camera e TF.
+  - Marcadores de ponto inicial e ponto final no cenario.
+  - Ponte ROS 2 <-> Gazebo para clock, comandos, odometria, laser, camera e TF.
+  - Launch integrado com SLAM Toolbox, RViz e controle por teclado.
 
 - Pacote `vision_yolov8`
   - No ROS 2 inicial para executar YOLOv8 sobre imagens da camera.
@@ -26,7 +28,11 @@ src/
     launch/
       p3at_gazebo.launch.py
       p3at_praca.launch.py
+      p3at_slam.launch.py
+      p3at_teleop.launch.py
     meshes/
+    rviz/
+      p3at_slam.rviz
     urdf/
     worlds/
       praca_ao_ar_livre.sdf
@@ -46,8 +52,16 @@ docs/
 Na raiz do workspace:
 
 ```bash
-colcon build
+source /opt/ros/jazzy/setup.bash
+colcon build --symlink-install
 source install/setup.bash
+```
+
+Dependencias uteis para SLAM e RViz:
+
+```bash
+sudo apt update
+sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server
 ```
 
 ## Executar A Simulacao
@@ -62,6 +76,49 @@ Cenario da praca ao ar livre:
 
 ```bash
 ros2 launch p3at_simulation p3at_praca.launch.py
+```
+
+## Executar SLAM + RViz + Teclado
+
+Launch completo para mapear a praca com LiDAR, visualizar no RViz e controlar
+o robo pelo teclado:
+
+```bash
+ros2 launch p3at_simulation p3at_slam.launch.py
+```
+
+Para abrir sem teleop:
+
+```bash
+ros2 launch p3at_simulation p3at_slam.launch.py teleop:=false
+```
+
+Para abrir sem RViz:
+
+```bash
+ros2 launch p3at_simulation p3at_slam.launch.py rviz:=false
+```
+
+Controle por teclado em um terminal separado:
+
+```bash
+ros2 launch p3at_simulation p3at_teleop.launch.py
+```
+
+Teclas principais:
+
+```text
+i = frente
+, = re
+j/l = girar esquerda/direita
+k ou espaco = parar
+q/z = aumenta/diminui velocidade
+```
+
+Salvar o mapa gerado pelo SLAM:
+
+```bash
+ros2 run nav2_map_server map_saver_cli -f mapa_praca
 ```
 
 ## Executar YOLOv8

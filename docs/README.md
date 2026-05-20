@@ -13,6 +13,9 @@ os pacotes usados incluem:
 - `ros_gz_sim`
 - `ros_gz_bridge`
 - `ros_gz_interfaces`
+- `rosgraph_msgs`
+- `rviz2`
+- `slam_toolbox`
 - `xacro`
 - `geometry_msgs`
 - `nav_msgs`
@@ -22,6 +25,14 @@ os pacotes usados incluem:
 - `cv_bridge`
 - `ultralytics`
 - `opencv-python` ou OpenCV equivalente
+- `nav2_map_server`, caso queira salvar mapas com `map_saver_cli`
+
+Instalacao dos pacotes ROS 2 mais importantes:
+
+```bash
+sudo apt update
+sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server
+```
 
 ## Pacote `p3at_simulation`
 
@@ -31,6 +42,13 @@ Arquivos principais:
 
 - `launch/p3at_gazebo.launch.py`: launch principal da simulacao.
 - `launch/p3at_praca.launch.py`: launch para abrir o cenario de praca.
+- `launch/p3at_slam.launch.py`: launch completo com praca, SLAM Toolbox,
+  RViz e teleop por teclado.
+- `launch/p3at_teleop.launch.py`: controle manual por teclado.
+- `p3at_simulation/keyboard_teleop.py`: no ROS 2 que publica `Twist` em
+  `/cmd_vel` a partir do teclado.
+- `rviz/p3at_slam.rviz`: configuracao RViz para mapa, laser, TF, odometria e
+  modelo do robo.
 - `urdf/p3at.xacro`: descricao principal do robo.
 - `urdf/p3at.gazebo`: plugins e sensores do Gazebo.
 - `worlds/praca_ao_ar_livre.sdf`: mundo da praca ao ar livre.
@@ -45,13 +63,19 @@ ros2 launch p3at_simulation p3at_gazebo.launch.py
 Argumentos importantes:
 
 - `world`: mundo SDF ou recurso Gazebo que sera carregado.
+- `spawn_x`: posicao X inicial do robo.
+- `spawn_y`: posicao Y inicial do robo.
 - `spawn_z`: altura inicial do robo no Gazebo.
+- `spawn_yaw`: orientacao inicial do robo.
+- `use_sim_time`: usa o tempo da simulacao.
 
 Exemplo:
 
 ```bash
 ros2 launch p3at_simulation p3at_gazebo.launch.py \
   world:=$(ros2 pkg prefix p3at_simulation)/share/p3at_simulation/worlds/praca_ao_ar_livre.sdf \
+  spawn_x:=-8.5 \
+  spawn_y:=0.0 \
   spawn_z:=0.14
 ```
 
@@ -61,8 +85,70 @@ ros2 launch p3at_simulation p3at_gazebo.launch.py \
 ros2 launch p3at_simulation p3at_praca.launch.py
 ```
 
-Este launch carrega `praca_ao_ar_livre.sdf` e usa `spawn_z:=0.14` para colocar
-o robo acima do piso/caminho do cenario.
+Este launch carrega `praca_ao_ar_livre.sdf` e coloca o robo no ponto inicial
+azul do cenario:
+
+```text
+x = -8.5
+y = 0.0
+z = 0.14
+yaw = 0.0
+```
+
+### Launch SLAM + RViz + Teclado
+
+```bash
+ros2 launch p3at_simulation p3at_slam.launch.py
+```
+
+Este launch inicia:
+
+- Gazebo com a praca;
+- robo P3-AT no ponto inicial;
+- SLAM Toolbox em modo `online_async`;
+- RViz com `rviz/p3at_slam.rviz`;
+- teleop por teclado publicando em `/cmd_vel`.
+
+Argumentos:
+
+- `use_sim_time`: padrao `true`.
+- `rviz`: padrao `true`. Use `rviz:=false` para nao abrir RViz.
+- `teleop`: padrao `true`. Use `teleop:=false` para nao iniciar o teclado.
+- `rviz_config`: caminho para um arquivo `.rviz` alternativo.
+
+Exemplos:
+
+```bash
+ros2 launch p3at_simulation p3at_slam.launch.py rviz:=false
+ros2 launch p3at_simulation p3at_slam.launch.py teleop:=false
+```
+
+### Teleop Separado
+
+Para controlar o robo em outro terminal:
+
+```bash
+ros2 launch p3at_simulation p3at_teleop.launch.py
+```
+
+Argumentos:
+
+- `speed`: velocidade linear inicial. Padrao `0.35`.
+- `turn`: velocidade angular inicial. Padrao `0.75`.
+- `repeat_rate`: taxa de publicacao de `/cmd_vel`. Padrao `10.0`.
+
+Teclas principais:
+
+```text
+i = frente
+, = re
+j/l = girar esquerda/direita
+k ou espaco = parar
+u/o/m/. = curvas
+q/z = aumenta/diminui velocidade
+w/x = aumenta/diminui somente velocidade linear
+e/c = aumenta/diminui somente velocidade angular
+```
 
 ### Cenario Da Praca
 
@@ -75,6 +161,8 @@ O mundo `praca_ao_ar_livre.sdf` contem:
 - bancos;
 - arvores;
 - postes;
+- objetos de teste, como bicicleta, lixeira, mochila, caixa, cone e placa;
+- ponto inicial azul e ponto final verde para testes de navegacao;
 - iluminacao tipo sol.
 
 O cenario foi feito com primitivas SDF simples para manter o projeto leve e
@@ -86,6 +174,7 @@ O launch principal inicia `ros_gz_bridge` para os seguintes topicos:
 
 ```text
 /cmd_vel
+/clock
 /odom
 /scan
 /camera/image_raw
@@ -95,6 +184,7 @@ O launch principal inicia `ros_gz_bridge` para os seguintes topicos:
 Uso esperado:
 
 - publicar comandos de velocidade em `/cmd_vel`;
+- sincronizar nos com o tempo da simulacao em `/clock`;
 - ler odometria em `/odom`;
 - ler laser em `/scan`;
 - ler imagem da camera em `/camera/image_raw`;
@@ -157,24 +247,40 @@ Formato aproximado de cada deteccao:
 1. Compilar o workspace:
 
    ```bash
-   colcon build
+   cd /home/jonas/ros2_ws
+   source /opt/ros/jazzy/setup.bash
+   colcon build --symlink-install
    source install/setup.bash
    ```
 
-2. Abrir a praca:
+2. Abrir a praca com SLAM, RViz e teleop:
+
+   ```bash
+   ros2 launch p3at_simulation p3at_slam.launch.py
+   ```
+
+3. Usar o teclado no terminal do teleop para mover o robo e gerar o mapa.
+
+4. Salvar o mapa:
+
+   ```bash
+   ros2 run nav2_map_server map_saver_cli -f mapa_praca
+   ```
+
+5. Opcionalmente, rodar somente a praca sem SLAM:
 
    ```bash
    ros2 launch p3at_simulation p3at_praca.launch.py
    ```
 
-3. Em outro terminal, carregar o ambiente:
+6. Em outro terminal, carregar o ambiente:
 
    ```bash
    cd /home/jonas/ros2_ws
    source install/setup.bash
    ```
 
-4. Rodar o detector YOLOv8:
+7. Rodar o detector YOLOv8:
 
    ```bash
    ros2 launch vision_yolov8 yolo_detector.launch.py
