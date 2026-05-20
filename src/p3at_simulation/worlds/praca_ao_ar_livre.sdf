@@ -142,6 +142,82 @@
       </link>
     </model>
 
+    <model name="ponto_inicial_robo">
+      <static>true</static>
+      <pose>-8.5 0 0.16 0 0 0</pose>
+      <link name="link">
+        <visual name="area_inicio_visual">
+          <geometry><cylinder><radius>0.85</radius><length>0.04</length></cylinder></geometry>
+          <material>
+            <ambient>0.02 0.25 0.85 1</ambient>
+            <diffuse>0.05 0.38 1.0 1</diffuse>
+          </material>
+        </visual>
+        <visual name="centro_inicio_visual">
+          <pose>0 0 0.04 0 0 0</pose>
+          <geometry><cylinder><radius>0.18</radius><length>0.06</length></cylinder></geometry>
+          <material>
+            <ambient>0.80 0.92 1.0 1</ambient>
+            <diffuse>0.90 0.96 1.0 1</diffuse>
+          </material>
+        </visual>
+        <visual name="poste_inicio_visual">
+          <pose>-0.65 -0.65 0.55 0 0 0</pose>
+          <geometry><cylinder><radius>0.035</radius><length>1.10</length></cylinder></geometry>
+          <material>
+            <ambient>0.06 0.08 0.12 1</ambient>
+            <diffuse>0.08 0.10 0.16 1</diffuse>
+          </material>
+        </visual>
+        <visual name="bandeira_inicio_visual">
+          <pose>-0.42 -0.65 0.92 0 0 0</pose>
+          <geometry><box><size>0.46 0.04 0.28</size></box></geometry>
+          <material>
+            <ambient>0.02 0.25 0.85 1</ambient>
+            <diffuse>0.05 0.38 1.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="ponto_final_robo">
+      <static>true</static>
+      <pose>8.5 0 0.16 0 0 0</pose>
+      <link name="link">
+        <visual name="area_final_visual">
+          <geometry><cylinder><radius>0.85</radius><length>0.04</length></cylinder></geometry>
+          <material>
+            <ambient>0.05 0.55 0.16 1</ambient>
+            <diffuse>0.08 0.72 0.22 1</diffuse>
+          </material>
+        </visual>
+        <visual name="centro_final_visual">
+          <pose>0 0 0.04 0 0 0</pose>
+          <geometry><cylinder><radius>0.18</radius><length>0.06</length></cylinder></geometry>
+          <material>
+            <ambient>0.85 1.0 0.86 1</ambient>
+            <diffuse>0.92 1.0 0.92 1</diffuse>
+          </material>
+        </visual>
+        <visual name="poste_final_visual">
+          <pose>0.65 0.65 0.55 0 0 0</pose>
+          <geometry><cylinder><radius>0.035</radius><length>1.10</length></cylinder></geometry>
+          <material>
+            <ambient>0.06 0.08 0.12 1</ambient>
+            <diffuse>0.08 0.10 0.16 1</diffuse>
+          </material>
+        </visual>
+        <visual name="bandeira_final_visual">
+          <pose>0.42 0.65 0.92 0 0 0</pose>
+          <geometry><box><size>0.46 0.04 0.28</size></box></geometry>
+          <material>
+            <ambient>0.05 0.55 0.16 1</ambient>
+            <diffuse>0.08 0.72 0.22 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
   
 
     <model name="banco_oeste">
@@ -456,5 +532,3 @@
 
   </world>
 </sdf>
-
-

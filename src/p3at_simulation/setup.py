@@ -24,6 +24,7 @@ data_files = [
     ),
     (os.path.join('share', package_name, 'urdf'), package_files('urdf/*')),
     (os.path.join('share', package_name, 'worlds'), package_files('worlds/*')),
+    (os.path.join('share', package_name, 'rviz'), package_files('rviz/*')),
 ]
 
 for dirpath, _, filenames in os.walk('meshes'):
@@ -52,6 +53,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'keyboard_teleop = p3at_simulation.keyboard_teleop:main',
         ],
     },
 )

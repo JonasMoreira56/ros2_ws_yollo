@@ -18,11 +18,18 @@ def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
     world = LaunchConfiguration('world')
+    spawn_x = LaunchConfiguration('spawn_x')
+    spawn_y = LaunchConfiguration('spawn_y')
     spawn_z = LaunchConfiguration('spawn_z')
+    spawn_yaw = LaunchConfiguration('spawn_yaw')
+    use_sim_time = LaunchConfiguration('use_sim_time')
     gz_resource_path = os.path.dirname(pkg_share_dir)
     urdf_file_path = os.path.join(pkg_share_dir, 'urdf', 'p3at.xacro')
     robot_description_config = xacro.process_file(urdf_file_path)
-    robot_description = {'robot_description': robot_description_config.toxml()}
+    robot_description = {
+        'robot_description': robot_description_config.toxml(),
+        'use_sim_time': use_sim_time,
+    }
 
     set_gz_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
@@ -49,7 +56,10 @@ def generate_launch_description():
         arguments=[
             '-topic', 'robot_description',
             '-entity', 'p3at',
+            '-x', spawn_x,
+            '-y', spawn_y,
             '-z', spawn_z,
+            '-Y', spawn_yaw,
         ],
         output='screen',
     )
@@ -58,6 +68,7 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/cmd_vel@geometry_msgs/msg/Twist]gz.msgs.Twist',
             '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
@@ -75,9 +86,29 @@ def generate_launch_description():
             description='Gazebo world file or resource to load.',
         ),
         DeclareLaunchArgument(
-            'spawn_z',
+            'spawn_x',
+            default_value='-8.5',
+            description='Initial robot X position in meters.',
+        ),
+        DeclareLaunchArgument(
+            'spawn_y',
             default_value='0.0',
+            description='Initial robot Y position in meters.',
+        ),
+        DeclareLaunchArgument(
+            'spawn_z',
+            default_value='0.14',
             description='Initial robot height in meters.',
+        ),
+        DeclareLaunchArgument(
+            'spawn_yaw',
+            default_value='0.0',
+            description='Initial robot yaw in radians.',
+        ),
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='true',
+            description='Use simulation time.',
         ),
         set_gz_resource_path,
         start_gazebo,
