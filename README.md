@@ -16,7 +16,8 @@ com YOLOv8.
   - Launch integrado com SLAM Toolbox, RViz e controle por teclado.
 
 - Pacote `vision_yolov8`
-  - No ROS 2 inicial para executar YOLOv8 sobre imagens da camera.
+  - No Python ROS 2 Jazzy para executar Ultralytics YOLOv8 sobre imagens da
+    camera.
   - Publicacao de imagem anotada.
   - Publicacao de deteccoes em JSON.
 
@@ -64,6 +65,16 @@ sudo apt update
 sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server
 ```
 
+Ambiente Python para YOLOv8:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source /home/jonas/env_tcc/bin/activate
+python3 -m pip install -r src/vision_yolov8/requirements.txt
+colcon build --symlink-install --packages-select vision_yolov8
+source install/setup.bash
+```
+
 ## Executar A Simulacao
 
 Cenario vazio:
@@ -105,14 +116,18 @@ Controle por teclado em um terminal separado:
 ros2 launch p3at_simulation p3at_teleop.launch.py
 ```
 
-Teclas principais:
+O controle por teclado usa um teleop proprio do pacote `p3at_simulation`, no
+arquivo `p3at_simulation/keyboard_teleop.py`. Ele publica comandos
+`geometry_msgs/Twist` no topico `/cmd_vel`.
+
+Teclas:
 
 ```text
-i = frente
-, = re
-j/l = girar esquerda/direita
-k ou espaco = parar
-q/z = aumenta/diminui velocidade
+seta para cima    = frente
+seta para baixo   = re
+seta para esquerda = girar para esquerda
+seta para direita  = girar para direita
+soltar as setas    = parar
 ```
 
 Salvar o mapa gerado pelo SLAM:
@@ -123,7 +138,8 @@ ros2 run nav2_map_server map_saver_cli -f mapa_praca
 
 ## Executar YOLOv8
 
-Com o Gazebo publicando a camera em `/camera/image_raw`:
+Com o ambiente acima ativado e o Gazebo publicando a camera em
+`/camera/image_raw`:
 
 ```bash
 ros2 launch vision_yolov8 yolo_detector.launch.py
@@ -133,6 +149,13 @@ Com um modelo treinado proprio:
 
 ```bash
 ros2 launch vision_yolov8 yolo_detector.launch.py model:=/caminho/para/best.pt
+```
+
+Saidas principais:
+
+```text
+/yolo/annotated_image
+/yolo/detections
 ```
 
 ## Verificacao

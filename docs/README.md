@@ -5,8 +5,8 @@ cenarios, quais topicos sao usados e onde continuar o desenvolvimento.
 
 ## Requisitos
 
-O projeto foi trabalhado em um ambiente ROS 2 com Gazebo Sim. No ambiente atual,
-os pacotes usados incluem:
+O projeto foi trabalhado em um ambiente ROS 2 Jazzy com Gazebo Sim. No ambiente
+atual, os pacotes usados incluem:
 
 - `rclpy`
 - `robot_state_publisher`
@@ -24,7 +24,7 @@ os pacotes usados incluem:
 - `std_msgs`
 - `cv_bridge`
 - `ultralytics`
-- `opencv-python` ou OpenCV equivalente
+- `python3-opencv` ou `opencv-python`
 - `nav2_map_server`, caso queira salvar mapas com `map_saver_cli`
 
 Instalacao dos pacotes ROS 2 mais importantes:
@@ -32,6 +32,16 @@ Instalacao dos pacotes ROS 2 mais importantes:
 ```bash
 sudo apt update
 sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server
+```
+
+Ambiente Python recomendado para YOLOv8 no Jazzy:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source /home/jonas/env_tcc/bin/activate
+python3 -m pip install -r src/vision_yolov8/requirements.txt
+colcon build --symlink-install --packages-select vision_yolov8
+source install/setup.bash
 ```
 
 ## Pacote `p3at_simulation`
@@ -131,23 +141,24 @@ Para controlar o robo em outro terminal:
 ros2 launch p3at_simulation p3at_teleop.launch.py
 ```
 
+O projeto usa um teleop proprio, implementado em
+`p3at_simulation/keyboard_teleop.py`. Ele le somente as teclas de seta e
+publica comandos `geometry_msgs/Twist` no topico `/cmd_vel`.
+
 Argumentos:
 
 - `speed`: velocidade linear inicial. Padrao `0.35`.
 - `turn`: velocidade angular inicial. Padrao `0.75`.
 - `repeat_rate`: taxa de publicacao de `/cmd_vel`. Padrao `10.0`.
 
-Teclas principais:
+Teclas:
 
 ```text
-i = frente
-, = re
-j/l = girar esquerda/direita
-k ou espaco = parar
-u/o/m/. = curvas
-q/z = aumenta/diminui velocidade
-w/x = aumenta/diminui somente velocidade linear
-e/c = aumenta/diminui somente velocidade angular
+seta para cima     = frente
+seta para baixo    = re
+seta para esquerda = girar para esquerda
+seta para direita  = girar para direita
+soltar as setas    = parar
 ```
 
 ### Cenario Da Praca
@@ -192,7 +203,8 @@ Uso esperado:
 
 ## Pacote `vision_yolov8`
 
-Responsavel pela base inicial de visao computacional.
+Responsavel pela deteccao de objetos com Ultralytics YOLOv8 em um no Python
+ROS 2 Jazzy.
 
 Arquivos principais:
 
@@ -210,7 +222,15 @@ Parametros:
 - `model`: caminho ou nome do modelo YOLOv8. Padrao: `yolov8n.pt`.
 - `image_topic`: topico de entrada. Padrao: `/camera/image_raw`.
 - `confidence`: limiar de confianca. Padrao: `0.25`.
+- `iou`: limiar IoU da etapa de NMS. Padrao: `0.45`.
+- `max_detections`: maximo de deteccoes por imagem. Padrao: `100`.
 - `device`: dispositivo de inferencia. Exemplo: `cpu`, `0`, `cuda`.
+- `annotated_topic`: topico da imagem anotada. Padrao:
+  `/yolo/annotated_image`.
+- `detections_topic`: topico das deteccoes em JSON. Padrao:
+  `/yolo/detections`.
+- `publish_annotated`: publica a imagem anotada. Padrao: `true`.
+- `use_sim_time`: usa o clock da simulacao. Padrao: `true`.
 
 Exemplo com modelo treinado:
 
@@ -218,6 +238,13 @@ Exemplo com modelo treinado:
 ros2 launch vision_yolov8 yolo_detector.launch.py \
   model:=/caminho/para/best.pt \
   confidence:=0.4
+```
+
+Topicos publicados:
+
+```text
+/yolo/annotated_image
+/yolo/detections
 ```
 
 ### Saidas Do Detector
