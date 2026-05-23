@@ -86,7 +86,7 @@ ros2 launch p3at_simulation p3at_gazebo.launch.py \
   world:=$(ros2 pkg prefix p3at_simulation)/share/p3at_simulation/worlds/praca_ao_ar_livre.sdf \
   spawn_x:=-8.5 \
   spawn_y:=0.0 \
-  spawn_z:=0.14
+  spawn_z:=0.0
 ```
 
 ### Launch Da Praca
@@ -95,13 +95,13 @@ ros2 launch p3at_simulation p3at_gazebo.launch.py \
 ros2 launch p3at_simulation p3at_praca.launch.py
 ```
 
-Este launch carrega `praca_ao_ar_livre.sdf` e coloca o robo no ponto inicial
-azul do cenario:
+Este launch carrega `praca_ao_ar_livre.sdf` e coloca o robo na posicao inicial
+configurada:
 
 ```text
-x = -8.5
-y = 0.0
-z = 0.14
+x = -1.5
+y = 2.0
+z = 0.0
 yaw = 0.0
 ```
 
@@ -141,6 +141,13 @@ Para controlar o robo em outro terminal:
 ros2 launch p3at_simulation p3at_teleop.launch.py
 ```
 
+Se as setas nao forem capturadas corretamente pelo `launch`, execute o no
+diretamente no terminal:
+
+```bash
+ros2 run p3at_simulation keyboard_teleop
+```
+
 O projeto usa um teleop proprio, implementado em
 `p3at_simulation/keyboard_teleop.py`. Ele le somente as teclas de seta e
 publica comandos `geometry_msgs/Twist` no topico `/cmd_vel`.
@@ -150,6 +157,8 @@ Argumentos:
 - `speed`: velocidade linear inicial. Padrao `0.35`.
 - `turn`: velocidade angular inicial. Padrao `0.75`.
 - `repeat_rate`: taxa de publicacao de `/cmd_vel`. Padrao `10.0`.
+- `pulse_duration`: duracao do pulso de velocidade a cada clique. Padrao
+  `0.25`.
 
 Teclas:
 
@@ -158,7 +167,7 @@ seta para cima     = frente
 seta para baixo    = re
 seta para esquerda = girar para esquerda
 seta para direita  = girar para direita
-soltar as setas    = parar
+cada clique        = envia um pulso de velocidade e para
 ```
 
 ### Cenario Da Praca

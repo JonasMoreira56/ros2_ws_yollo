@@ -116,6 +116,12 @@ Controle por teclado em um terminal separado:
 ros2 launch p3at_simulation p3at_teleop.launch.py
 ```
 
+Alternativa caso o terminal nao capture as setas pelo launch:
+
+```bash
+ros2 run p3at_simulation keyboard_teleop
+```
+
 O controle por teclado usa um teleop proprio do pacote `p3at_simulation`, no
 arquivo `p3at_simulation/keyboard_teleop.py`. Ele publica comandos
 `geometry_msgs/Twist` no topico `/cmd_vel`.
@@ -127,7 +133,7 @@ seta para cima    = frente
 seta para baixo   = re
 seta para esquerda = girar para esquerda
 seta para direita  = girar para direita
-soltar as setas    = parar
+cada clique        = envia um pulso de velocidade e para
 ```
 
 Salvar o mapa gerado pelo SLAM:
