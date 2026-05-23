@@ -16,6 +16,7 @@ atual, os pacotes usados incluem:
 - `rosgraph_msgs`
 - `rviz2`
 - `slam_toolbox`
+- `teleop_twist_keyboard`
 - `xacro`
 - `geometry_msgs`
 - `nav_msgs`
@@ -31,7 +32,7 @@ Instalacao dos pacotes ROS 2 mais importantes:
 
 ```bash
 sudo apt update
-sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server
+sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server ros-jazzy-teleop-twist-keyboard
 ```
 
 Ambiente Python recomendado para YOLOv8 no Jazzy:
@@ -54,9 +55,11 @@ Arquivos principais:
 - `launch/p3at_praca.launch.py`: launch para abrir o cenario de praca.
 - `launch/p3at_slam.launch.py`: launch completo com praca, SLAM Toolbox,
   RViz e teleop por teclado.
-- `launch/p3at_teleop.launch.py`: controle manual por teclado.
-- `p3at_simulation/keyboard_teleop.py`: no ROS 2 que publica `Twist` em
-  `/cmd_vel` a partir do teclado.
+- `launch/p3at_twist_keyboard.launch.py`: controle manual usando o pacote
+  `teleop_twist_keyboard`.
+- `launch/p3at_teleop.launch.py`: controle manual proprio por setas.
+- `p3at_simulation/keyboard_teleop.py`: no ROS 2 proprio que publica `Twist`
+  em `/cmd_vel` a partir das setas.
 - `rviz/p3at_slam.rviz`: configuracao RViz para mapa, laser, TF, odometria e
   modelo do robo.
 - `urdf/p3at.xacro`: descricao principal do robo.
@@ -135,7 +138,30 @@ ros2 launch p3at_simulation p3at_slam.launch.py teleop:=false
 
 ### Teleop Separado
 
-Para controlar o robo em outro terminal:
+Opcao recomendada para testar com o pacote `teleop_twist_keyboard`:
+
+```bash
+ros2 launch p3at_simulation p3at_twist_keyboard.launch.py
+```
+
+Ele publica `geometry_msgs/Twist` em `/cmd_vel`.
+
+Argumentos:
+
+- `speed`: velocidade linear inicial. Padrao `0.35`.
+- `turn`: velocidade angular inicial. Padrao `0.75`.
+
+Teclas principais:
+
+```text
+i = frente
+, = re
+j/l = girar esquerda/direita
+k = parar
+q/z = aumenta/diminui velocidade
+```
+
+Opcao propria por setas:
 
 ```bash
 ros2 launch p3at_simulation p3at_teleop.launch.py
@@ -148,11 +174,11 @@ diretamente no terminal:
 ros2 run p3at_simulation keyboard_teleop
 ```
 
-O projeto usa um teleop proprio, implementado em
-`p3at_simulation/keyboard_teleop.py`. Ele le somente as teclas de seta e
-publica comandos `geometry_msgs/Twist` no topico `/cmd_vel`.
+O teleop proprio e implementado em `p3at_simulation/keyboard_teleop.py`. Ele
+le somente as teclas de seta e publica comandos `geometry_msgs/Twist` no
+topico `/cmd_vel`.
 
-Argumentos:
+Argumentos do teleop proprio:
 
 - `speed`: velocidade linear inicial. Padrao `0.35`.
 - `turn`: velocidade angular inicial. Padrao `0.75`.
@@ -160,7 +186,7 @@ Argumentos:
 - `pulse_duration`: duracao do pulso de velocidade a cada clique. Padrao
   `0.25`.
 
-Teclas:
+Teclas do teleop proprio:
 
 ```text
 seta para cima     = frente
@@ -289,27 +315,35 @@ Formato aproximado de cada deteccao:
    source install/setup.bash
    ```
 
-2. Abrir a praca com SLAM, RViz e teleop:
+2. Abrir a praca com SLAM, RViz e teleop proprio por setas:
 
    ```bash
    ros2 launch p3at_simulation p3at_slam.launch.py
    ```
 
-3. Usar o teclado no terminal do teleop para mover o robo e gerar o mapa.
+3. Para testar com `teleop_twist_keyboard`, abra o SLAM sem teleop e rode o
+   teleop em outro terminal:
 
-4. Salvar o mapa:
+   ```bash
+   ros2 launch p3at_simulation p3at_slam.launch.py teleop:=false
+   ros2 launch p3at_simulation p3at_twist_keyboard.launch.py
+   ```
+
+4. Usar o teclado no terminal do teleop para mover o robo e gerar o mapa.
+
+5. Salvar o mapa:
 
    ```bash
    ros2 run nav2_map_server map_saver_cli -f mapa_praca
    ```
 
-5. Opcionalmente, rodar somente a praca sem SLAM:
+6. Opcionalmente, rodar somente a praca sem SLAM:
 
    ```bash
    ros2 launch p3at_simulation p3at_praca.launch.py
    ```
 
-6. Em outro terminal, carregar o ambiente:
+7. Em outro terminal, carregar o ambiente:
 
    ```bash
    cd /home/jonas/ros2_ws

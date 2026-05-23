@@ -31,6 +31,7 @@ src/
       p3at_praca.launch.py
       p3at_slam.launch.py
       p3at_teleop.launch.py
+      p3at_twist_keyboard.launch.py
     meshes/
     rviz/
       p3at_slam.rviz
@@ -58,11 +59,11 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-Dependencias uteis para SLAM e RViz:
+Dependencias uteis para SLAM, RViz e teleop:
 
 ```bash
 sudo apt update
-sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server
+sudo apt install ros-jazzy-slam-toolbox ros-jazzy-rviz2 ros-jazzy-nav2-map-server ros-jazzy-teleop-twist-keyboard
 ```
 
 Ambiente Python para YOLOv8:
@@ -110,7 +111,23 @@ Para abrir sem RViz:
 ros2 launch p3at_simulation p3at_slam.launch.py rviz:=false
 ```
 
-Controle por teclado em um terminal separado:
+Controle por teclado em um terminal separado usando `teleop_twist_keyboard`:
+
+```bash
+ros2 launch p3at_simulation p3at_twist_keyboard.launch.py
+```
+
+Teclas principais:
+
+```text
+i = frente
+, = re
+j/l = girar esquerda/direita
+k = parar
+q/z = aumenta/diminui velocidade
+```
+
+Teleop proprio por setas:
 
 ```bash
 ros2 launch p3at_simulation p3at_teleop.launch.py
@@ -122,11 +139,10 @@ Alternativa caso o terminal nao capture as setas pelo launch:
 ros2 run p3at_simulation keyboard_teleop
 ```
 
-O controle por teclado usa um teleop proprio do pacote `p3at_simulation`, no
-arquivo `p3at_simulation/keyboard_teleop.py`. Ele publica comandos
-`geometry_msgs/Twist` no topico `/cmd_vel`.
+O teleop proprio fica no arquivo `p3at_simulation/keyboard_teleop.py`. Ambos
+publicam comandos `geometry_msgs/Twist` no topico `/cmd_vel`.
 
-Teclas:
+Teclas do teleop proprio:
 
 ```text
 seta para cima    = frente
