@@ -3,13 +3,15 @@
 <package format="3">
   <name>vision_yolov8</name>
   <version>0.0.0</version>
-  <description>ROS 2 YOLOv8 vision node for camera detections.</description>
+  <description>ROS 2 Jazzy Python node for Ultralytics YOLOv8 detections.</description>
   <maintainer email="jonasmoreira076@gmail.com">jonas</maintainer>
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
 
   <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
 

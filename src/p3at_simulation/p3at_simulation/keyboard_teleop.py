@@ -1,6 +1,7 @@
 import select
 import sys
 import termios
+import time
 import tty
 
 from geometry_msgs.msg import Twist
@@ -12,43 +13,26 @@ HELP_TEXT = """
 Controle do P3-AT pelo teclado
 ------------------------------
 Movimento:
-   u    i    o
-   j    k    l
-   m    ,    .
+   ↑: frente
+   ↓: re
+   ←: girar para esquerda
+   →: girar para direita
 
-i: frente        ,: re
-j/l: girar       k/espaco: parar
-u/o/m/.: curvas
-
-Velocidade:
-q/z: aumenta/diminui linear e angular
-w/x: aumenta/diminui linear
-e/c: aumenta/diminui angular
+Cada clique envia um pulso de velocidade em /cmd_vel.
 
 CTRL-C para sair
 """
 
 MOVE_BINDINGS = {
-    'i': (1.0, 0.0),
-    ',': (-1.0, 0.0),
-    'j': (0.0, 1.0),
-    'l': (0.0, -1.0),
-    'u': (1.0, 1.0),
-    'o': (1.0, -1.0),
-    'm': (-1.0, -1.0),
-    '.': (-1.0, 1.0),
+    '\x1b[A': (1.0, 0.0),
+    '\x1b[B': (-1.0, 0.0),
+    '\x1b[D': (0.0, 1.0),
+    '\x1b[C': (0.0, -1.0),
+    '\x1bOA': (1.0, 0.0),
+    '\x1bOB': (-1.0, 0.0),
+    '\x1bOD': (0.0, 1.0),
+    '\x1bOC': (0.0, -1.0),
 }
-
-SPEED_BINDINGS = {
-    'q': (1.1, 1.1),
-    'z': (0.9, 0.9),
-    'w': (1.1, 1.0),
-    'x': (0.9, 1.0),
-    'e': (1.0, 1.1),
-    'c': (1.0, 0.9),
-}
-
-STOP_KEYS = {'k', ' ', '\r', '\n'}
 
 
 class KeyboardTeleop(Node):
@@ -59,6 +43,7 @@ class KeyboardTeleop(Node):
         self.speed = self.declare_parameter('speed', 0.35).value
         self.turn = self.declare_parameter('turn', 0.75).value
         repeat_rate = self.declare_parameter('repeat_rate', 10.0).value
+        self.pulse_duration = self.declare_parameter('pulse_duration', 0.25).value
         self.timeout = 1.0 / repeat_rate
 
         self.linear = 0.0
@@ -71,12 +56,6 @@ class KeyboardTeleop(Node):
     def stop(self):
         self.linear = 0.0
         self.angular = 0.0
-        self.publish_motion()
-
-    def update_speed(self, speed_scale, turn_scale):
-        self.speed *= speed_scale
-        self.turn *= turn_scale
-        print(f'velocidade linear: {self.speed:.2f} m/s | angular: {self.turn:.2f} rad/s')
 
     def publish_motion(self):
         message = Twist()
@@ -84,12 +63,35 @@ class KeyboardTeleop(Node):
         message.angular.z = self.angular
         self.publisher.publish(message)
 
+    def publish_motion_pulse(self, linear_direction, angular_direction):
+        self.set_motion(linear_direction, angular_direction)
+        self.publish_motion()
+        time.sleep(self.pulse_duration)
+        self.stop()
+        self.publish_motion()
+
 
 def read_key(tty_file, timeout):
     readable, _, _ = select.select([tty_file], [], [], timeout)
     if not readable:
         return None
-    return tty_file.read(1)
+
+    key = tty_file.read(1)
+    if key != '\x1b':
+        return key
+
+    sequence = key
+    while True:
+        readable, _, _ = select.select([tty_file], [], [], 0.01)
+        if not readable:
+            return sequence
+
+        sequence += tty_file.read(1)
+        if sequence in MOVE_BINDINGS:
+            return sequence
+
+        if len(sequence) >= 3:
+            return sequence
 
 
 def main(args=None):
@@ -109,20 +111,17 @@ def main(args=None):
                     key = read_key(tty_file, node.timeout)
 
                     if key in MOVE_BINDINGS:
-                        node.set_motion(*MOVE_BINDINGS[key])
-                    elif key in SPEED_BINDINGS:
-                        node.update_speed(*SPEED_BINDINGS[key])
-                    elif key in STOP_KEYS:
-                        node.stop()
+                        node.publish_motion_pulse(*MOVE_BINDINGS[key])
                     elif key == '\x03':
                         break
                     elif key is not None:
                         node.stop()
+                        node.publish_motion()
 
-                    node.publish_motion()
                     rclpy.spin_once(node, timeout_sec=0.0)
             finally:
                 node.stop()
+                node.publish_motion()
                 termios.tcsetattr(tty_file, termios.TCSADRAIN, settings)
     except OSError:
         node.get_logger().error(

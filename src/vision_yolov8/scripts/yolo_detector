@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "${YOLOV8_PYTHON:-/home/jonas/env_tcc/bin/python3}" -m vision_yolov8.yolo_detector_node "$@"

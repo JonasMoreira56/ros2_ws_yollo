@@ -12,26 +12,28 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name, ['package.xml', 'README.md', 'requirements.txt']),
         (
             os.path.join('share', package_name, 'launch'),
             glob(os.path.join('launch', '*.launch.py')),
         ),
     ],
-    install_requires=['setuptools'],
+    scripts=[
+        'scripts/yolo_detector',
+    ],
+    install_requires=[
+        'setuptools',
+        'ultralytics>=8.0.0,<9.0.0',
+    ],
     zip_safe=True,
     maintainer='jonas',
     maintainer_email='jonasmoreira076@gmail.com',
-    description='ROS 2 YOLOv8 vision node for camera detections.',
+    description='ROS 2 Jazzy Python node for Ultralytics YOLOv8 detections.',
     license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',
         ],
     },
-    entry_points={
-        'console_scripts': [
-            'yolo_detector = vision_yolov8.yolo_detector_node:main',
-        ],
-    },
+    entry_points={},
 )

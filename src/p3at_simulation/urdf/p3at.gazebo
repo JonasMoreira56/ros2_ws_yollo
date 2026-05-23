@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <robot>
 
+  <!-- Mantem o robo dinamico para a fisica do Gazebo aplicar gravidade. -->
+  <gazebo>
+    <static>false</static>
+  </gazebo>
+
   <!-- ##################################################################### -->
   <!-- PLUGIN DE CONTROLE (DRIVE)                                            -->
   <!-- ##################################################################### -->

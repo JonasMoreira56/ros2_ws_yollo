@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <sdf version="1.9">
   <world name="praca_ao_ar_livre">
+    <gravity>0 0 -9.81</gravity>
+
     <physics name="default_physics" type="ignored">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
@@ -56,7 +58,7 @@
         <collision name="collision">
           <geometry>
             <box>
-              <size>24 24 0.5</size>
+              <size>24 24 0.10</size>
             </box>
           </geometry>
         </collision>

@@ -59,6 +59,7 @@
   </link>
   <gazebo reference="base_link">
     <material value="Gazebo/Red"/>
+    <gravity>true</gravity>
   </gazebo>
   <!-- Top -->
   <link name="top_plate">
@@ -209,6 +210,9 @@
   </link>
   <gazebo reference="p3at_front_left_wheel">
     <material value="Gazebo/Black"/>
+    <gravity>true</gravity>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
   </gazebo>
   <joint name="p3at_front_left_wheel_joint" type="continuous">
     <axis xyz="0 1 0"/>
@@ -302,6 +306,9 @@
   </link>
   <gazebo reference="p3at_back_left_wheel">
     <material value="Gazebo/Black"/>
+    <gravity>true</gravity>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
   </gazebo>
 
   <joint name="p3at_back_left_wheel_joint" type="continuous">
@@ -389,6 +396,9 @@
   </link>
   <gazebo reference="p3at_front_right_wheel">
     <material value="Gazebo/Black"/>
+    <gravity>true</gravity>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
   </gazebo>
   <joint name="p3at_front_right_wheel_joint" type="continuous">
     <axis xyz="0 1 0"/>
@@ -481,6 +491,9 @@
   </link>
   <gazebo reference="p3at_back_right_wheel">
     <material value="Gazebo/Black"/>
+    <gravity>true</gravity>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
   </gazebo>
   <joint name="p3at_back_right_wheel_joint" type="continuous">
     <axis xyz="0 1 0"/>
