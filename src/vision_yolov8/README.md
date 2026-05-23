@@ -24,6 +24,13 @@ Com a camera publicada em `/camera/image_raw`:
 ros2 launch vision_yolov8 yolo_detector.launch.py
 ```
 
+Fluxo dos topicos:
+
+```text
+/camera/image_raw -> yolo_detector -> /yolo/annotated_image
+                                  -> /yolo/detections
+```
+
 Com um modelo YOLOv8 treinado:
 
 ```bash

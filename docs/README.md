@@ -252,6 +252,13 @@ Arquivos principais:
 ros2 launch vision_yolov8 yolo_detector.launch.py
 ```
 
+Fluxo dos topicos:
+
+```text
+/camera/image_raw -> yolo_detector -> /yolo/annotated_image
+                                  -> /yolo/detections
+```
+
 Parametros:
 
 - `model`: caminho ou nome do modelo YOLOv8. Padrao: `yolov8n.pt`.

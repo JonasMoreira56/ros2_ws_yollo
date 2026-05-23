@@ -68,6 +68,7 @@ class YoloDetectorNode(Node):
 
         self.get_logger().info(
             f'YOLOv8 ready: model={model_path}, input={image_topic}, '
+            f'annotated={annotated_topic if publish_annotated else "disabled"}, '
             f'detections={detections_topic}'
         )
 

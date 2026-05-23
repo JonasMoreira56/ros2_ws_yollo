@@ -2,6 +2,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
@@ -38,14 +39,17 @@ def generate_launch_description():
             parameters=[{
                 'model': model,
                 'image_topic': image_topic,
-                'confidence': confidence,
-                'iou': iou,
-                'max_detections': max_detections,
+                'confidence': ParameterValue(confidence, value_type=float),
+                'iou': ParameterValue(iou, value_type=float),
+                'max_detections': ParameterValue(max_detections, value_type=int),
                 'device': device,
                 'annotated_topic': annotated_topic,
                 'detections_topic': detections_topic,
-                'publish_annotated': publish_annotated,
-                'use_sim_time': use_sim_time,
+                'publish_annotated': ParameterValue(
+                    publish_annotated,
+                    value_type=bool,
+                ),
+                'use_sim_time': ParameterValue(use_sim_time, value_type=bool),
             }],
         ),
     ])
