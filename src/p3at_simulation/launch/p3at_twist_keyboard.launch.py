@@ -8,19 +8,18 @@ from launch_ros.parameter_descriptions import ParameterValue
 def generate_launch_description():
     speed = LaunchConfiguration('speed')
     turn = LaunchConfiguration('turn')
-    repeat_rate = LaunchConfiguration('repeat_rate')
-    pulse_duration = LaunchConfiguration('pulse_duration')
 
-    keyboard_teleop = Node(
-        package='p3at_simulation',
-        executable='keyboard_teleop',
-        name='p3at_keyboard_teleop',
+    teleop_twist_keyboard = Node(
+        package='teleop_twist_keyboard',
+        executable='teleop_twist_keyboard',
+        name='teleop_twist_keyboard',
         parameters=[{
             'speed': ParameterValue(speed, value_type=float),
             'turn': ParameterValue(turn, value_type=float),
-            'repeat_rate': ParameterValue(repeat_rate, value_type=float),
-            'pulse_duration': ParameterValue(pulse_duration, value_type=float),
         }],
+        remappings=[
+            ('cmd_vel', '/cmd_vel'),
+        ],
         output='screen',
         emulate_tty=True,
     )
@@ -28,7 +27,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'speed',
-            default_value='0.50',
+            default_value='0.35',
             description='Initial linear speed in meters per second.',
         ),
         DeclareLaunchArgument(
@@ -36,15 +35,5 @@ def generate_launch_description():
             default_value='0.75',
             description='Initial angular speed in radians per second.',
         ),
-        DeclareLaunchArgument(
-            'repeat_rate',
-            default_value='10.0',
-            description='Command publication rate in Hz.',
-        ),
-        DeclareLaunchArgument(
-            'pulse_duration',
-            default_value='0.25',
-            description='Seconds to keep each arrow command before stopping.',
-        ),
-        keyboard_teleop,
+        teleop_twist_keyboard,
     ])
