@@ -97,7 +97,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'spawn_z',
-            default_value='0.14',
+            default_value='0.0',
             description='Initial robot height in meters.',
         ),
         DeclareLaunchArgument(

@@ -18,10 +18,10 @@ def generate_launch_description():
         ),
         launch_arguments={
             'world': world_path,
-            'spawn_x': '-1.5',
-            'spawn_y': '2.0',
-            'spawn_z': '0.14',
-            'spawn_yaw': '0.0',
+            'spawn_x': '-8.5',
+            'spawn_y': '0.0',
+            'spawn_z': '0.11',
+            'spawn_yaw': '10.0',
             'use_sim_time': use_sim_time,
         }.items(),
     )
